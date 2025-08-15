@@ -163,16 +163,6 @@ class Check(ABC):
         self.dict = {}
 
     @property
-    def queries(self) -> list[Query]:
-        """
-        Returns all queries that were executed for this check.
-        """
-        queries = []
-        for metric in self.metrics.values():
-            queries.extend(metric.queries)
-        return queries
-
-    @property
     def name(self) -> str:
         """User readable name.
 
