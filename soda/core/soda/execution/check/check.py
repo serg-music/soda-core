@@ -163,6 +163,16 @@ class Check(ABC):
         self.dict = {}
 
     @property
+    def queries(self) -> list[Query]:
+        """
+        Returns all queries that were executed for this check.
+        """
+        queries = []
+        for metric in self.metrics.values():
+            queries.extend(metric.queries)
+        return queries
+
+    @property
     def name(self) -> str:
         """User readable name.
 
@@ -346,6 +356,7 @@ class Check(ABC):
                 # "filter": Partition.get_partition_name(self.partition), TODO: re-enable once backend supports the property.
                 "column": Column.get_partition_name(self.column),
                 "metrics": [metric.identity for metric in self.metrics.values()],
+                "queries": [query_dict for query in self.queries for query_dict in query.get_cloud_dicts()],
                 "outcome": self.outcome.value if self.outcome else None,
                 "diagnostics": self.get_cloud_diagnostics_dict(),
                 "source": "soda-core",
@@ -377,6 +388,7 @@ class Check(ABC):
                 "filter": Partition.get_partition_name(self.partition),
                 "column": Column.get_partition_name(self.column),
                 "metrics": [metric.identity for metric in self.metrics.values()],
+                "queries": [query.get_dict() for query in self.queries],
                 "outcome": self.outcome.value if self.outcome else None,
                 "outcomeReasons": self.outcome_reasons,
                 "archetype": self.archetype,
